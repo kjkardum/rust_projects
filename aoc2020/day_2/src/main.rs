@@ -1,39 +1,60 @@
 use std::{fs::File, io::prelude::*, io::BufReader};
 
-fn main() {
-    let lines = read_lines("input.txt");
-    let mut part1_counter = 0;
-    let mut part2_counter = 0;
-    for line in lines {
-        parse_line(&line[..], &mut part1_counter, &mut part2_counter);
+struct PasswordPolicy {
+    range: (usize, usize),
+    character: char,
+    password: String,
+}
+impl PasswordPolicy {
+    fn new(input: &str) -> Self {
+        let mut iterator = input.split(|c| c == ' ' || c == '-' || c == ':');
+        let range = (
+            iterator.next().unwrap().parse().unwrap(),
+            iterator.next().unwrap().parse().unwrap(),
+        );
+        let character = iterator.next().unwrap().chars().nth(0).unwrap();
+        iterator.next();
+        let password = iterator.next().unwrap().to_owned();
+        Self {
+            range,
+            character,
+            password,
+        }
     }
-    println!("Part 1: {}", part1_counter);
-    println!("Part 2: {}", part2_counter);
+    fn check_for_part_1(&self) -> bool {
+        let count = self
+            .password
+            .chars()
+            .filter(|c| *c == self.character)
+            .count();
+        count >= self.range.0 && count <= self.range.1
+    }
+    fn check_for_part_2(&self) -> bool {
+        let first = self.password.chars().nth(self.range.0 - 1).unwrap() == self.character;
+        let second = self.password.chars().nth(self.range.1 - 1).unwrap() == self.character;
+        first ^ second
+    }
 }
 
-fn parse_line(line: &str, part1_counter: &mut i32, part2_counter: &mut i32) -> Option<i32> {
-    let mut split_iter = line.split(|c| c == ':' || c == ' ' || c == '-');
-
-    let min = split_iter.next()?.parse::<i32>().ok()?;
-    let max = split_iter.next()?.parse::<i32>().ok()?;
-    let letter = split_iter.next()?;
-    split_iter.next()?;
-    let password = split_iter.next()?;
-
-    let occurences = password.matches(letter).count();
-    if (occurences as i32) >= min && (occurences as i32) <= max {
-        *part1_counter += 1;
-    }
-    let first = (password.as_bytes()[(min as usize) - 1] as char)
-        .to_string()
-        .eq(letter);
-    let second = (password.as_bytes()[(max as usize) - 1] as char)
-        .to_string()
-        .eq(letter);
-    if first ^ second {
-        *part2_counter += 1
-    }
-    Some(0)
+fn main() {
+    let lines: Vec<PasswordPolicy> = read_lines("input.txt")
+        .iter()
+        .map(|line| PasswordPolicy::new(&line[..]))
+        .collect();
+    println!(
+        "Part 1: {}",
+        lines
+            .iter()
+            .filter(|line| PasswordPolicy::check_for_part_1(line))
+            .count()
+    );
+    println!(
+        "Part 2: {}",
+        lines
+            .iter()
+            .filter(|line| PasswordPolicy::check_for_part_2(line))
+            .count()
+    );
 }
 
 fn read_lines(filename: &str) -> Vec<String> {
