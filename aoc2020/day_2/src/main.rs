@@ -35,7 +35,7 @@ fn main() {
         }
     }
     println!("Part 1: {}", part1_counter);
-    println!("Part 1: {}", part2_counter);
+    println!("Part 2: {}", part2_counter);
 }
 
 fn read_lines(filename: &str) -> Vec<String> {
