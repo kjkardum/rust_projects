@@ -27,7 +27,7 @@ impl Component for NewUrl {
         html! {
             <>
                 <input type="text" placeholder="long url" name="url" class="login-form-input"/><br/>
-                <Link route=AppRoute::Urls><button class="login_button">{"New URL"}</button></Link><br/>
+                <Link route=AppRoute::Urls><button class="add_button"><i class="fa fa-plus" aria-hidden="true"></i></button></Link><br/>
             </>
         }
     }
