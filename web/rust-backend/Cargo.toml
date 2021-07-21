@@ -7,7 +7,7 @@ edition = "2018"
 
 [dependencies]
 rocket = { version = "0.5.0-rc.1", features = ["secrets", "tls", "json"] }
-schemars = "0.7"
+schemars = { version = "0.8" }
 serde = "1.0.8"
 serde_derive = "1.0.8"
 serde_json = "1.0.2"
@@ -16,3 +16,5 @@ hmac = "0.11.0"
 jwt = "0.14.0"
 sha2 = "0.9.5"
 bcrypt = "0.10"
+rocket_okapi = { version = "0.7.0-alpha-1", package = "rocket_okapi_fork" }
+okapi = { version = "0.6.0-alpha-1", features = ["derive_json_schema"], package = "okapi_fork" }

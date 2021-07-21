@@ -2,21 +2,20 @@ use crate::DTOs::{response_DTO::ResponseDTO, user_DTO::UserDTO};
 use rocket::response::status;
 use rocket::serde::json::Json;
 use rocket::Route;
+use rocket_okapi::{openapi, routes_with_openapi};
 
 pub fn get_endpoints() -> Vec<Route> {
-    routes![index]
+    routes_with_openapi![index]
 }
 
+//Base route
+//
+//For jwt testing purposes
+#[openapi("Default")]
 #[get("/")]
-fn index(user: Result<UserDTO, status::Custom<&'static str>>) -> Json<ResponseDTO> {
-    if let Err(e) = user {
-        return Json(ResponseDTO {
-            reply: "Not logged in!".to_string(),
-            status: "error",
-        });
-    }
-    Json(ResponseDTO {
-        reply: "Main API Route :)".to_string(),
+fn index(user: UserDTO) -> Json<ResponseDTO> {
+    return Json(ResponseDTO {
+        reply: "Hello World!".to_string(),
         status: "success",
-    })
+    });
 }

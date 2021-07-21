@@ -1,4 +1,5 @@
 use rust_backend::controllers;
+use rust_backend::swagger;
 
 #[macro_use]
 extern crate rocket;
@@ -14,4 +15,5 @@ fn rocket() -> _ {
         )
         .mount("/api/users", controllers::user_controller::get_endpoints())
         .mount("/api/urls", controllers::url_controller::get_endpoints())
+        .mount("/swagger-ui", swagger::new())
 }

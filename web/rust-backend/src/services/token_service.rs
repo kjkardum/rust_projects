@@ -20,17 +20,19 @@ pub fn generate_token(user: &UserDTO) -> String {
 
 pub fn verify_token(token: &str) -> Result<UserDTO, &'static str> {
     let key: Hmac<Sha256> = Hmac::new_from_slice(b"some-secret").unwrap();
-    let claims: BTreeMap<String, String> = token.verify_with_key(&key).unwrap();
-    if !verify_expiry(&claims) {
-        return Err("Expired token");
+    if let Ok(claims) = token.verify_with_key(&key) {
+        if !verify_expiry(&claims) {
+            return Err("Expired token");
+        }
+        return Ok(UserDTO {
+            id: claims["id"].parse::<i32>().unwrap(),
+            username: claims["username"].to_string(),
+            is_admin: claims["is_admin"].parse::<bool>().unwrap(),
+            iat: claims["iat"].parse::<u64>().unwrap(),
+            eat: claims["eat"].parse::<u64>().unwrap(),
+        });
     }
-    Ok(UserDTO {
-        id: claims["id"].parse::<i32>().unwrap(),
-        username: claims["username"].to_string(),
-        is_admin: claims["is_admin"].parse::<bool>().unwrap(),
-        iat: claims["iat"].parse::<u64>().unwrap(),
-        eat: claims["eat"].parse::<u64>().unwrap(),
-    })
+    Err("Invalid token")
 }
 
 pub fn verify_expiry(claims: &BTreeMap<String, String>) -> bool {
