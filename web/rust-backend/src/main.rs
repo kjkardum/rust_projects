@@ -1,26 +1,17 @@
-mod DTOs;
+use rust_backend::controllers;
 
 #[macro_use]
 extern crate rocket;
-
-use rocket::serde::json::Json;
-
-#[get("/")]
-fn index() -> Json<DTOs::testing_DTO::TestingDTO> {
-    Json(DTOs::testing_DTO::TestingDTO {
-        reply: "Main API Route :)".to_string(),
-    })
-}
-
-#[post("/authenticate")]
-fn authenticate_user() -> Json<DTOs::user_DTO::UserDTO> {
-    Json(DTOs::user_DTO::UserDTO {
-        id: 1,
-        username: "kjkardum!".to_string(),
-    })
-}
+extern crate bcrypt;
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/api", routes![index, authenticate_user])
+    rocket::build()
+        .mount("/api", controllers::base_controller::get_endpoints())
+        .mount(
+            "/api/account",
+            controllers::account_controller::get_endpoints(),
+        )
+        .mount("/api/users", controllers::user_controller::get_endpoints())
+        .mount("/api/urls", controllers::url_controller::get_endpoints())
 }

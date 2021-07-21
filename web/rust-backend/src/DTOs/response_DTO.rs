@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct TestingDTO {
+pub struct ResponseDTO {
     pub reply: String,
+    pub status: &'static str,
 }
