@@ -1,5 +1,8 @@
 use crate::entities::app_user::AppUser;
 
+//Finds first occurence of db user entity with same username field and returns "Ok(AppUser)"
+//
+//Retunrs string Err if not found
 pub fn find_by_username(username: &str) -> Result<AppUser, &'static str> {
     if username == "kjkardum" {
         return Ok(AppUser {

@@ -14,6 +14,9 @@ use rocket::serde::json::Json;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+//JWT encoded user data transfer object
+//
+//Extracted from Authorization header
 #[derive(Serialize, Deserialize, JsonSchema, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct UserDTO {
@@ -47,30 +50,21 @@ impl<'r> FromRequest<'r> for UserDTO {
         )
     }
 }
+
+//Used for adding authorization to Swagger openapi.json
 impl<'a, 'r> OpenApiFromRequest<'a> for UserDTO {
     fn request_input(
         _gen: &mut OpenApiGenerator,
         _name: String,
     ) -> rocket_okapi::Result<RequestHeaderInput> {
         let mut security_req = SecurityRequirement::new();
-        // each security requirement needs a specific key in the openapi docs
         security_req.insert("JWT_security".into(), Vec::new());
-
-        // The scheme for the security needs to be defined as well
-        // https://swagger.io/docs/specification/authentication/basic-authentication/
         let security_scheme = SecurityScheme {
-            description: Some("Requires JWToken to access".into()),
-            // scheme identifier is the keyvalue under which this security_scheme will be filed in
-            // the openapi.json file
-            scheme_identifier: "FixedKeyApiKeyAuth".into(),
-            // this will show where and under which name the value will be found in the HTTP header
-            // in this case, the header key x-api-key will be searched
-            // other alternatives are "query", "cookie" according to the openapi specs.
-            // [link](https://swagger.io/specification/#security-scheme-object)
-            // which also is where you can find examples of how to create a JWT scheme for example
-            data: SecuritySchemeData::ApiKey {
-                name: "Authorization".into(),
-                location: "header".into(),
+            description: Some("Bearer JWT".into()),
+            scheme_identifier: "JWT_Authorization".into(),
+            data: SecuritySchemeData::Http {
+                scheme: "bearer".into(),
+                bearer_format: Some("JWT".into()),
             },
             extensions: Object::default(),
         };

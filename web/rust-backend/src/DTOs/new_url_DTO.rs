@@ -1,12 +1,9 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-//Data transfer object for sending URLs back to client
+//Data transfer object for adding new short urls to database
 #[derive(Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct UrlDTO {
-    pub id: i32,
+pub struct NewUrlDTO {
     pub long_url: String,
-    pub short_url: String,
-    pub uses: i32,
 }

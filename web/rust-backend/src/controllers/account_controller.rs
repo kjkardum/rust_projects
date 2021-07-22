@@ -15,7 +15,7 @@ pub fn get_endpoints() -> Vec<Route> {
 //Authenticate user with username and password
 //
 //Returns JWT which expires in 7 days
-#[openapi("Account")]
+#[openapi(tag = "Account")]
 #[post("/authenticate", format = "json", data = "<credentials>")]
 fn authenticate_user(credentials: Json<LoginDTO>) -> Json<ResponseDTO> {
     let login_data = credentials.into_inner();

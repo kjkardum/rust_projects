@@ -11,7 +11,7 @@ pub fn get_endpoints() -> Vec<Route> {
 //Base route
 //
 //For jwt testing purposes
-#[openapi("Default")]
+#[openapi(tag = "Default")]
 #[get("/")]
 fn index(user: UserDTO) -> Json<ResponseDTO> {
     return Json(ResponseDTO {

@@ -1,10 +1,9 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-//Data transfer object used for authenticating users at /authenticate
+//Data transfer object for adding new users to database
 #[derive(Serialize, Deserialize, JsonSchema, Debug)]
 #[serde(rename_all = "camelCase")]
-pub struct LoginDTO {
+pub struct NewUserDTO {
     pub username: String,
-    pub password: String,
 }
