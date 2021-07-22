@@ -1,17 +1,14 @@
-use self::diesel::prelude::*;
 use crate::data::diesel_pg::Db;
-use crate::data::schema::users;
 use crate::entities::app_user::AppUser;
 use crate::helpers::mapper;
 use crate::services::token_service;
 use crate::DTOs::{
-    login_DTO::LoginDTO, response_DTO::ResponseDTO, user_DTO::UserDTO, user_repository,
+    login_DTO::LoginDTO, response_DTO::ResponseDTO, 
 };
 use bcrypt::{hash, verify, DEFAULT_COST};
 use rocket::serde::json::Json;
 use rocket::Route;
 use rocket_okapi::{openapi, routes_with_openapi};
-use rocket_sync_db_pools::diesel;
 
 pub fn get_endpoints() -> Vec<Route> {
     routes_with_openapi![authenticate_user]
@@ -24,7 +21,7 @@ pub fn get_endpoints() -> Vec<Route> {
 #[post("/authenticate", format = "json", data = "<credentials>")]
 async fn authenticate_user(connection: Db, credentials: Json<LoginDTO>) -> Json<ResponseDTO> {
     let login_data = credentials.into_inner();
-    let mut error = "Bad request";
+    let error: &'static str;
     if let Ok(app_user) = AppUser::find_by_username(&login_data.username, &connection).await {
         if &app_user.password_hash == "None" {
             if let Ok(hashed) = hash(login_data.password, DEFAULT_COST) {

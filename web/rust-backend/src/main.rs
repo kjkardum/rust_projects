@@ -10,7 +10,7 @@ extern crate bcrypt;
 fn rocket() -> _ {
     rocket::build()
         .attach(diesel_pg::stage())
-        .mount("/api", controllers::base_controller::get_endpoints())
+        .mount("/", controllers::base_controller::get_endpoints())
         .mount(
             "/api/account",
             controllers::account_controller::get_endpoints(),

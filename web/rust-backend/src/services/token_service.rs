@@ -1,14 +1,17 @@
 use crate::DTOs::user_DTO::UserDTO;
+use dotenv::dotenv;
 use hmac::{Hmac, NewMac};
 use jwt::{SignWithKey, VerifyWithKey};
 use sha2::Sha256;
 use std::collections::BTreeMap;
+use std::env;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 pub const WEEK: u64 = 60 * 60 * 24 * 7;
 
 pub fn generate_token(user: &UserDTO) -> String {
-    let key: Hmac<Sha256> = Hmac::new_from_slice(b"some-secret").unwrap();
+    dotenv().expect(".env file not found");
+    let key: Hmac<Sha256> = Hmac::new_from_slice(env::var("SECRET").unwrap().as_bytes()).unwrap();
     let mut claims = BTreeMap::new();
     claims.insert("id", user.id.to_string());
     claims.insert("username", user.username.to_string());
@@ -19,7 +22,8 @@ pub fn generate_token(user: &UserDTO) -> String {
 }
 
 pub fn verify_token(token: &str) -> Result<UserDTO, &'static str> {
-    let key: Hmac<Sha256> = Hmac::new_from_slice(b"some-secret").unwrap();
+    dotenv().expect(".env file not found");
+    let key: Hmac<Sha256> = Hmac::new_from_slice(env::var("SECRET").unwrap().as_bytes()).unwrap();
     if let Ok(claims) = token.verify_with_key(&key) {
         if !verify_expiry(&claims) {
             return Err("Expired token");

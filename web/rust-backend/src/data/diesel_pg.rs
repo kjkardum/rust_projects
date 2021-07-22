@@ -1,4 +1,4 @@
-use okapi::openapi3::{Object, Responses, SecurityRequirement, SecurityScheme, SecuritySchemeData};
+use okapi::openapi3::Responses;
 use rocket::{Rocket, Build};
 use rocket::fairing::AdHoc;
 use rocket_sync_db_pools::diesel;
@@ -8,8 +8,6 @@ use rocket_okapi::{
     response::OpenApiResponder,
 };
 use rocket::Response;
-
-use self::diesel::prelude::*;
 
 #[database("my_db")]
 pub struct Db(diesel::PgConnection);

@@ -5,36 +5,54 @@ use crate::data::schema::{users, urls};
 use rocket_sync_db_pools::diesel;
 
 impl Url {
-
     //Finds all occurences of db url entities from user by username field
-    pub async fn find_by_username(username: &str, connection: &Db) -> Result<Url, &'static str> {
+    pub async fn find_by_username(username: &str, connection: &Db) -> Result<Vec<Url>, &'static str> {
         let username_clone = username.to_string();
-        if let Ok(app_user) = connection.run(move |conn| {
+        let db_result: Result<AppUser, diesel::result::Error> = connection.run(move |conn| {
             users::table
                 .filter(users::username.eq(username_clone))
                 .first(conn)
-        }).await {
-            return connection.run(move |conn| {
-                urls::belonging_to(&app_user)
+        }).await;
+        if let Ok(app_user) = db_result {
+            if let Ok(db_urls) = connection.run(move |conn| {
+                Url::belonging_to(&app_user)
                     .load::<Url>(conn)
-            }).await;
+            }).await{
+                return Ok(db_urls);
+            }
         }
         Err("Couldn't find user")
     }
 
     //Finds all occurences of db url entities from user by ID field
-    pub async fn find_by_user_id(id: i32, connection: &Db) -> Result<Url, &'static str> {
-        if let Ok(app_user) = connection.run(move |conn| {
+    pub async fn find_by_user_id(id: i32, connection: &Db) -> Result<Vec<Url>, &'static str> {
+        let db_result: Result<AppUser, diesel::result::Error> = connection.run(move |conn| {
             users::table
                 .filter(users::id.eq(Some(id)))
                 .first(conn)
-        }).await {
-            return connection.run(move |conn| {
-                urls::belonging_to(&app_user)
+        }).await;
+        if let Ok(app_user) = db_result {
+            if let Ok(db_urls) = connection.run(move |conn| {
+                Url::belonging_to(&app_user)
                     .load::<Url>(conn)
-            }).await;
+            }).await{
+                return Ok(db_urls);
+            }
         }
         Err("Couldn't find user")
+    }
+
+    //Finds first url occurence with specified id
+    pub async fn find_by_short(short: &str, connection: &Db) -> Result<Url, &'static str> {
+        let short_clone = short.to_string();
+        if let Ok(app_url) = connection.run(move |conn| {
+            urls::table
+                .filter(urls::short_url.eq(short_clone))
+                .first(conn)
+        }).await {
+            return Ok(app_url);
+        }
+        Err("Couldn't find url")
     }
 
     //Creates new url and returns it

@@ -1,8 +1,5 @@
-use self::diesel::prelude::*;
-use crate::data::diesel_pg::Db;
 use crate::data::schema::urls;
 use crate::entities::app_user::AppUser;
-use rocket_sync_db_pools::diesel;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -16,6 +13,8 @@ use serde::{Deserialize, Serialize};
     Insertable,
     Clone,
     Associations,
+    Identifiable,
+    PartialEq,
 )]
 #[serde(rename_all = "camelCase")]
 #[belongs_to(AppUser, foreign_key = "user_id")]

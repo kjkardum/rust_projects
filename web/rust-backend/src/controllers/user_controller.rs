@@ -1,13 +1,9 @@
-use self::diesel::prelude::*;
 use crate::data::diesel_pg::Db;
-use crate::data::schema::users;
 use crate::entities::app_user::AppUser;
-use crate::DTOs::{new_user_DTO::NewUserDTO, response_DTO::ResponseDTO, user_DTO::UserDTO, user_repository};
-use rocket::response::status;
+use crate::DTOs::{new_user_DTO::NewUserDTO, user_DTO::UserDTO};
 use rocket::serde::json::Json;
 use rocket::Route;
 use rocket_okapi::{openapi, routes_with_openapi};
-use rocket_sync_db_pools::diesel;
 
 pub fn get_endpoints() -> Vec<Route> {
     routes_with_openapi![add_user, get_users, get_user, delete_user]
