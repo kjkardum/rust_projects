@@ -19,13 +19,13 @@ pub fn get_endpoints() -> Vec<Route> {
 
 //Authenticate user with username and password
 //
-//Returns JWT which expires in 7 days
+//If new user doesn't yet have password, then requested password is set as new password
 #[openapi(tag = "Account")]
 #[post("/authenticate", format = "json", data = "<credentials>")]
 async fn authenticate_user(connection: Db, credentials: Json<LoginDTO>) -> Json<ResponseDTO> {
     let login_data = credentials.into_inner();
     let mut error = "Bad request";
-    if let Ok(app_user) = user_repository::find_by_username(&login_data.username, &connection).await {
+    if let Ok(app_user) = AppUser::find_by_username(&login_data.username, &connection).await {
         if &app_user.password_hash == "None" {
             if let Ok(hashed) = hash(login_data.password, DEFAULT_COST) {
                 let update = AppUser {
