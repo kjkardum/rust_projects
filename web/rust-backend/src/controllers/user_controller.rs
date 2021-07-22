@@ -1,9 +1,13 @@
+use self::diesel::prelude::*;
+use crate::data::diesel_pg::Db;
+use crate::data::schema::users;
 use crate::entities::app_user::AppUser;
 use crate::DTOs::{new_user_DTO::NewUserDTO, response_DTO::ResponseDTO, user_DTO::UserDTO};
 use rocket::response::status;
 use rocket::serde::json::Json;
 use rocket::Route;
 use rocket_okapi::{openapi, routes_with_openapi};
+use rocket_sync_db_pools::diesel;
 
 pub fn get_endpoints() -> Vec<Route> {
     routes_with_openapi![add_user, get_users, get_user, delete_user]
@@ -14,13 +18,15 @@ pub fn get_endpoints() -> Vec<Route> {
 // Returns db entity for new user
 #[openapi(tag = "User")]
 #[post("/", format = "json", data = "<new_user>")]
-fn add_user(new_user: Json<NewUserDTO>, user: UserDTO) -> Json<AppUser> {
-    Json(AppUser {
-        id: 1,
-        username: "kjkardum".to_string(),
-        password_hash: "$2b$12$dpGY2pc/bA3RF60c1mm68OPyTecYTxlrp3fes6AfSTBC7Pn431o4K".to_string(),
-        is_admin: true,
-    })
+async fn add_user(connection: Db, new_user: Json<NewUserDTO>, user: UserDTO) -> Json<AppUser> {
+    let db_user = AppUser {
+        id: None,
+        username: new_user.into_inner().username,
+        password_hash: "None".to_string(),
+        is_admin: false,
+    };
+    let new_user: AppUser = AppUser::create(db_user, &connection).await;
+    Json(new_user)
 }
 
 // Get list of all users in application
@@ -30,7 +36,7 @@ fn add_user(new_user: Json<NewUserDTO>, user: UserDTO) -> Json<AppUser> {
 #[get("/")]
 fn get_users(user: UserDTO) -> Json<Vec<AppUser>> {
     Json(vec![AppUser {
-        id: 1,
+        id: Some(1),
         username: "kjkardum".to_string(),
         password_hash: "$2b$12$dpGY2pc/bA3RF60c1mm68OPyTecYTxlrp3fes6AfSTBC7Pn431o4K".to_string(),
         is_admin: true,
@@ -44,7 +50,7 @@ fn get_users(user: UserDTO) -> Json<Vec<AppUser>> {
 #[get("/<id>")]
 fn get_user(id: i32, user: UserDTO) -> Json<AppUser> {
     Json(AppUser {
-        id: 1,
+        id: Some(1),
         username: "kjkardum".to_string(),
         password_hash: "$2b$12$dpGY2pc/bA3RF60c1mm68OPyTecYTxlrp3fes6AfSTBC7Pn431o4K".to_string(),
         is_admin: true,

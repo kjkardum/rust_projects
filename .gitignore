@@ -16,3 +16,6 @@ target/
 *.pdb
 
 *.ignore
+
+*.env
+rocket.toml

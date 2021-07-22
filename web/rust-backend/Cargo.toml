@@ -18,3 +18,11 @@ sha2 = "0.9.5"
 bcrypt = "0.10"
 rocket_okapi = { version = "0.7.0-alpha-1", package = "rocket_okapi_fork" }
 okapi = { version = "0.6.0-alpha-1", features = ["derive_json_schema"], package = "okapi_fork" }
+diesel = { version = "1.4.4", features = ["postgres"] }
+dotenv = "0.15.0"
+diesel_migrations = "1.4.0"
+
+
+[dependencies.rocket_sync_db_pools]
+version = "0.1.0-rc.1"
+features = ["diesel_postgres_pool"]

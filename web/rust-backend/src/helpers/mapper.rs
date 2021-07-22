@@ -7,7 +7,7 @@ use crate::DTOs::user_DTO::UserDTO;
 //Resulting UserDTO can then be encoded in JWT and returned as response to client
 pub fn to_user(input: &AppUser) -> UserDTO {
     UserDTO {
-        id: input.id,
+        id: input.id.unwrap(),
         username: input.username.clone(),
         is_admin: input.is_admin,
         iat: token_service::time_in_secs(),

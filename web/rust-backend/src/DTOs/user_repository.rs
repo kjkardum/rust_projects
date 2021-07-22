@@ -1,17 +1,19 @@
 use crate::entities::app_user::AppUser;
-
+use self::diesel::prelude::*;
+use crate::data::diesel_pg::Db;
+use crate::data::schema::users;
+use rocket_sync_db_pools::diesel;
 //Finds first occurence of db user entity with same username field and returns "Ok(AppUser)"
 //
 //Retunrs string Err if not found
-pub fn find_by_username(username: &str) -> Result<AppUser, &'static str> {
-    if username == "kjkardum" {
-        return Ok(AppUser {
-            id: 1,
-            username: "kjkardum".to_string(),
-            password_hash: "$2b$12$dpGY2pc/bA3RF60c1mm68OPyTecYTxlrp3fes6AfSTBC7Pn431o4K"
-                .to_string(), //Hashed "Pa$$w0rd"
-            is_admin: true,
-        });
+pub async fn find_by_username(username: &str, connection: &Db) -> Result<AppUser, &'static str> {
+    let username_clone = username.to_string();
+    if let Ok(app_user) = connection.run(move |conn| {
+        users::table
+            .filter(users::username.eq(username_clone))
+            .first(conn)
+    }).await {
+        return Ok(app_user);
     }
     Err("Couldn't find user")
 }
