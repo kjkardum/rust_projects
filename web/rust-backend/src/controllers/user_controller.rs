@@ -15,7 +15,6 @@ pub fn get_endpoints() -> Vec<Route> {
 #[openapi(tag = "User")]
 #[post("/", format = "json", data = "<new_user>")]
 async fn add_user(connection: Db, new_user: Json<NewUserDTO>, user: UserDTO) -> Result<Json<AppUser>, &'static str> {
-    if !user.is_admin { return Err("Insufficient privileges") }
     let db_user = AppUser {
         id: None,
         username: new_user.into_inner().username,
