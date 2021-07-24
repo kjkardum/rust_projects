@@ -29,7 +29,13 @@ impl Component for UrlList {
     type Message = Msg;
     type Properties = UrlProps;
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        let request = Request::get(baseUrl.to_owned() + "api/urls/")
+        let adminOrUsername: String;
+        if !props.user.isAdmin {
+            adminOrUsername = props.user.username.to_string()
+        } else {
+            adminOrUsername = "".to_string()
+        };
+        let request = Request::get(baseUrl.to_owned() + "api/urls/" + &adminOrUsername)
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer ".to_owned() + &props.token)
             .body(Nothing)
@@ -53,7 +59,13 @@ impl Component for UrlList {
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::Get => {
-                let request = Request::get(baseUrl.to_owned() + "api/urls/")
+                let adminOrUsername: String;
+                if !self.props.user.isAdmin {
+                    adminOrUsername = self.props.user.username.to_string()
+                } else {
+                    adminOrUsername = "".to_string()
+                };
+                let request = Request::get(baseUrl.to_owned() + "api/urls/" + &adminOrUsername)
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer ".to_owned() + &self.props.token)
                     .body(Nothing)
@@ -126,7 +138,7 @@ impl UrlList {
         html! {
             <li class="li">
                 <a href={baseUrl.to_owned() + "/u/" + &item.shortUrl}>{&item.shortUrl}</a>{" ⟶ "}<a href={item.longUrl.to_string()}>{&item.longUrl}</a>
-                <button class="li-button" disabled=!self.props.user.is_admin onclick=self.link.callback(move |_| Msg::Remove((id)))>{"✕"}</button>
+                <button class="li-button" disabled=!self.props.user.isAdmin onclick=self.link.callback(move |_| Msg::Remove((id)))>{"✕"}</button>
             </li>
         }
     }
