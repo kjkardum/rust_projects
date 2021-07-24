@@ -7,7 +7,6 @@ fn main() {
     let lines = read_lines("input.txt");
     println!("\nPart 1:");
     part1(lines);
-
     let lines = read_lines("input.txt");
     println!("\nPart 2:");
     part2(lines);

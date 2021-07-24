@@ -1,6 +1,8 @@
 use yew::prelude::*;
+use yew::services::storage::{Area, StorageService};
+use yew::web_sys;
 
-use crate::router::{AppRoute, Link};
+use crate::router::{AppAnchor, AppRoute};
 
 pub struct AddUser {
     link: ComponentLink<Self>,
@@ -28,7 +30,10 @@ impl Component for AddUser {
             <div>
                 <h1>{"Give someone access!"}</h1>
                 <input type="text" placeholder="new username" name="username" class="login-form-input"/><br/>
-                <Link route=AppRoute::Urls><button class="login_button">{"Add user"}</button></Link><br/>
+
+                <AppAnchor route=AppRoute::Urls>
+                    <button class="login_button">{"Add user"}</button>
+                </AppAnchor><br/>
             </div>
         }
     }
