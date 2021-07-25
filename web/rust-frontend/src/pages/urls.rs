@@ -38,7 +38,11 @@ impl Component for Urls {
         match msg {
             Msg::LogOut => {
                 self.storage.remove("jwt");
-                web_sys::window().unwrap().location().assign("/login");
+                web_sys::window()
+                    .unwrap()
+                    .location()
+                    .assign("/login")
+                    .unwrap();
                 true
             }
         }

@@ -15,7 +15,9 @@ pub fn get_endpoints() -> Vec<Route> {
         add_url,
         delete_url,
         get_urls_by_user_id,
-        get_urls_by_username
+        get_urls_by_username,
+        url_opt,
+        url_opt_param,
     ]
 }
 
@@ -84,3 +86,6 @@ async fn delete_url(connection: Db, id: i32, user: UserDTO) -> Result<&'static s
     }
     return Err("Can not delete id!");
 }
+
+#[openapi(skip)] #[options("/")] fn url_opt() -> &'static str { crate::cors::DEFAULT_OPTIONS }
+#[openapi(skip)] #[options("/<_>")] fn url_opt_param() -> &'static str { crate::cors::DEFAULT_OPTIONS }

@@ -1,12 +1,8 @@
-use crate::baseUrl;
-use crate::models::{
-    url_model::UrlModel,
-    user::{User, UserEntity},
-};
+use crate::models::user::{User, UserEntity};
 use crate::router::{AppAnchor, AppRoute};
+use crate::BASE_URL;
 use serde_json::json;
 use yew::format::Json;
-use yew::format::Nothing;
 use yew::prelude::*;
 use yew::services::fetch::{FetchService, FetchTask, Request, Response};
 use yew::web_sys;
@@ -49,7 +45,7 @@ impl Component for AddUser {
             }
             Msg::AddUsername => {
                 let request_body = json!({"username": &(self.new_username)});
-                let request = Request::post(baseUrl.to_owned() + "api/users/")
+                let request = Request::post(BASE_URL.to_owned() + "api/users/")
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer ".to_owned() + &self.props.token)
                     .body(Json(&request_body))
@@ -68,8 +64,8 @@ impl Component for AddUser {
             Msg::ReceiveResponse(response) => {
                 self.fetch_task = None;
                 self.new_username = "".to_string();
-                if let Ok(data) = response {
-                    web_sys::window().unwrap().location().assign("/");
+                if let Ok(_) = response {
+                    web_sys::window().unwrap().location().assign("/").unwrap();
                 }
                 true
             }

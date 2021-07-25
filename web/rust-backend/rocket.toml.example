@@ -1,2 +1,5 @@
+[global]
+address = "0.0.0.0"
+
 [global.databases.my_db]
-url = "postgres://username:password@localhost/diesel_demo"
+url = "postgres://username:password@db/diesel_demo"

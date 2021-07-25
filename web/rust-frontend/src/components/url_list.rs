@@ -1,6 +1,5 @@
-use crate::baseUrl;
 use crate::models::{url_model::UrlModel, user::User};
-use crate::router::{AppAnchor, AppRoute};
+use crate::BASE_URL;
 use yew::format::Json;
 use yew::format::Nothing;
 use yew::prelude::*;
@@ -22,20 +21,20 @@ pub enum Msg {
     Get,
     ReceiveResponse(Result<Vec<UrlModel>, anyhow::Error>),
     Remove(i32),
-    RemoveResponse(Result<String, anyhow::Error>),
+    RemoveResponse,
 }
 
 impl Component for UrlList {
     type Message = Msg;
     type Properties = UrlProps;
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        let adminOrUsername: String;
+        let admin_or_username: String;
         if !props.user.isAdmin {
-            adminOrUsername = props.user.username.to_string()
+            admin_or_username = props.user.username.to_string()
         } else {
-            adminOrUsername = "".to_string()
+            admin_or_username = "".to_string()
         };
-        let request = Request::get(baseUrl.to_owned() + "api/urls/" + &adminOrUsername)
+        let request = Request::get(BASE_URL.to_owned() + "api/urls/" + &admin_or_username)
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer ".to_owned() + &props.token)
             .body(Nothing)
@@ -59,13 +58,13 @@ impl Component for UrlList {
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::Get => {
-                let adminOrUsername: String;
+                let admin_or_username: String;
                 if !self.props.user.isAdmin {
-                    adminOrUsername = self.props.user.username.to_string()
+                    admin_or_username = self.props.user.username.to_string()
                 } else {
-                    adminOrUsername = "".to_string()
+                    admin_or_username = "".to_string()
                 };
-                let request = Request::get(baseUrl.to_owned() + "api/urls/" + &adminOrUsername)
+                let request = Request::get(BASE_URL.to_owned() + "api/urls/" + &admin_or_username)
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer ".to_owned() + &self.props.token)
                     .body(Nothing)
@@ -92,23 +91,22 @@ impl Component for UrlList {
                 true
             }
             Msg::Remove(id) => {
-                let request = Request::delete(baseUrl.to_owned() + "api/urls/" + &id.to_string())
+                let request = Request::delete(BASE_URL.to_owned() + "api/urls/" + &id.to_string())
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer ".to_owned() + &self.props.token)
                     .body(Nothing)
                     .expect("Could not build that request.");
 
-                let callback = self.link.callback(
-                    |response: Response<Json<Result<String, anyhow::Error>>>| {
-                        let Json(data) = response.into_body();
-                        Msg::RemoveResponse(data)
-                    },
-                );
+                let callback =
+                    self.link
+                        .callback(|_: Response<Json<Result<String, anyhow::Error>>>| {
+                            Msg::RemoveResponse
+                        });
                 let task = FetchService::fetch(request, callback).expect("failed to start request");
                 self.fetch_task = Some(task);
                 true
             }
-            Msg::RemoveResponse(response) => {
+            Msg::RemoveResponse => {
                 self.fetch_task = None;
                 self.link.send_message(Msg::Get);
                 false
@@ -137,8 +135,8 @@ impl UrlList {
         let id = item.id;
         html! {
             <li class="li">
-                <a href={baseUrl.to_owned() + "/u/" + &item.shortUrl}>{&item.shortUrl}</a>{" ⟶ "}<a href={item.longUrl.to_string()}>{&item.longUrl}</a>
-                <button class="li-button" disabled=!self.props.user.isAdmin onclick=self.link.callback(move |_| Msg::Remove((id)))>{"✕"}</button>
+                <a href={BASE_URL.to_owned() + "/u/" + &item.shortUrl}>{&item.shortUrl}</a>{" ⟶ "}<a href={item.longUrl.to_string()}>{&item.longUrl}</a>
+                <button class="li-button" disabled=!self.props.user.isAdmin onclick=self.link.callback(move |_| Msg::Remove(id))>{"✕"}</button>
             </li>
         }
     }

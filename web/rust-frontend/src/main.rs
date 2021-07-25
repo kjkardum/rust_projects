@@ -5,26 +5,23 @@ mod router;
 
 use crate::models::user::{StrUser, User};
 use jsonwebtokens as jwt;
-use jwt::{raw, raw::TokenSlices, Algorithm, AlgorithmID, Verifier};
-use router::{AppAnchor, AppRoute, AppRouter};
-use serde_json::json;
-use serde_json::value::Value;
+use jwt::{raw, raw::TokenSlices};
+use router::{AppRoute, AppRouter};
 use yew::prelude::*;
 use yew::services::storage::{Area, StorageService};
-use yew_router::{route::Route, switch::Permissive};
 
 struct Model {}
 
-pub const baseUrl: &'static str = "http://localhost:8000/";
+pub const BASE_URL: &'static str = "http://localhost:8000/";
 
 impl Component for Model {
     type Message = ();
     type Properties = ();
-    fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(_: Self::Properties, _link: ComponentLink<Self>) -> Self {
         Self {}
     }
 
-    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
         false
     }
 

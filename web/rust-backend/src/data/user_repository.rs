@@ -37,7 +37,7 @@ impl AppUser {
         diesel::insert_into(users::table)
             .values(&user)
             .execute(conn)
-        }).await;
+        }).await.unwrap();
 
         connection.run(move |conn| {
         users::table

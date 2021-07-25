@@ -1,5 +1,18 @@
 version: "3"
 services:
+  frontend:
+    build: "rust-frontend/."
+    ports:
+      - 8080:8080
+    command: "trunk serve --release"
+  backend:
+    build: "rust-backend/."
+    ports:
+      - 8000:8000
+    networks:
+      - backend
+    environment:
+      - RUST_BACKTRACE=full
   db:
     image: postgres
     volumes:
@@ -10,5 +23,9 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
     ports:
       - 5432:5432
+    networks:
+      - backend
 volumes:
   database_data:
+networks:
+  backend:

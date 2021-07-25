@@ -1,14 +1,10 @@
-use crate::baseUrl;
 use crate::models::{url_model::UrlModel, user::User};
-use crate::pages::urls::Urls;
+use crate::BASE_URL;
 use serde_json::json;
 use yew::format::Json;
-use yew::format::Nothing;
 use yew::prelude::*;
 use yew::services::fetch::{FetchService, FetchTask, Request, Response};
 use yew::web_sys;
-
-use crate::router::{AppAnchor, AppRoute};
 
 pub struct NewUrl {
     link: ComponentLink<Self>,
@@ -24,7 +20,7 @@ pub struct NewUrlProps {
 
 pub enum Msg {
     AddUrl,
-    ReceiveResponse(Result<UrlModel, anyhow::Error>),
+    ReceiveResponse,
     UpdateLongUrl(String),
 }
 
@@ -48,26 +44,25 @@ impl Component for NewUrl {
             }
             Msg::AddUrl => {
                 let request_body = json!({"longUrl": &(self.long_url)});
-                let request = Request::post(baseUrl.to_owned() + "api/urls/")
+                let request = Request::post(BASE_URL.to_owned() + "api/urls/")
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer ".to_owned() + &self.props.token)
                     .body(Json(&request_body))
                     .expect("Could not build that request.");
 
-                let callback = self.link.callback(
-                    |response: Response<Json<Result<UrlModel, anyhow::Error>>>| {
-                        let Json(data) = response.into_body();
-                        Msg::ReceiveResponse(data)
-                    },
-                );
+                let callback =
+                    self.link
+                        .callback(|_: Response<Json<Result<UrlModel, anyhow::Error>>>| {
+                            Msg::ReceiveResponse
+                        });
                 let task = FetchService::fetch(request, callback).expect("failed to start request");
                 self.fetch_task = Some(task);
                 true
             }
-            Msg::ReceiveResponse(response) => {
+            Msg::ReceiveResponse => {
                 self.fetch_task = None;
                 self.long_url = "".to_string();
-                web_sys::window().unwrap().location().reload();
+                web_sys::window().unwrap().location().reload().unwrap();
                 true
             }
         }

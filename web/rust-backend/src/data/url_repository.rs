@@ -61,7 +61,7 @@ impl Url {
         diesel::insert_into(urls::table)
             .values(&url)
             .execute(conn)
-        }).await;
+        }).await.unwrap();
 
         connection.run(move |conn| {
         urls::table

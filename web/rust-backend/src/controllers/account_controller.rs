@@ -11,7 +11,7 @@ use rocket::Route;
 use rocket_okapi::{openapi, routes_with_openapi};
 
 pub fn get_endpoints() -> Vec<Route> {
-    routes_with_openapi![authenticate_user]
+    routes_with_openapi![authenticate_user, authenticate_user_opt]
 }
 
 //Authenticate user with username and password
@@ -61,3 +61,5 @@ async fn authenticate_user(connection: Db, credentials: Json<LoginDTO>) -> Json<
         status: "error",
     });
 }
+
+#[openapi(skip)] #[options("/authenticate")] fn authenticate_user_opt() -> &'static str { crate::cors::DEFAULT_OPTIONS }

@@ -10,7 +10,7 @@ fn get_docs() -> SwaggerUIConfig {
             UrlObject::new("Account", "/api/account/openapi.json"),
             UrlObject::new("Users", "/api/users/openapi.json"),
             UrlObject::new("Urls", "/api/urls/openapi.json"),
-            UrlObject::new("Main", "/api/openapi.json"),
+            UrlObject::new("Main", "/openapi.json"),
         ],
         ..Default::default()
     }

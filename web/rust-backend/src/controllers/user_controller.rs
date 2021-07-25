@@ -6,7 +6,13 @@ use rocket::Route;
 use rocket_okapi::{openapi, routes_with_openapi};
 
 pub fn get_endpoints() -> Vec<Route> {
-    routes_with_openapi![add_user, get_users, get_user, delete_user]
+    routes_with_openapi![
+        add_user,
+        get_users,
+        get_user,
+        delete_user,
+        user_opt,
+        user_opt_param]
 }
 
 // Add new user to DB with specified username
@@ -63,3 +69,6 @@ async fn delete_user(connection: Db, id: i32, user: UserDTO) -> Result<&'static 
     }
     return Err("Can not delete user!");
 }
+
+#[openapi(skip)] #[options("/")] fn user_opt() -> &'static str { crate::cors::DEFAULT_OPTIONS }
+#[openapi(skip)] #[options("/<_>")] fn user_opt_param() -> &'static str { crate::cors::DEFAULT_OPTIONS }

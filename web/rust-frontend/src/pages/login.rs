@@ -1,5 +1,4 @@
-use crate::baseUrl;
-use crate::router::{AppAnchor, AppRoute};
+use crate::BASE_URL;
 use serde::Deserialize;
 use serde_json::json;
 use yew::format::Json;
@@ -50,7 +49,7 @@ impl Component for Login {
             Msg::Login => {
                 let request_body =
                     json!({"username": &(self.username), "password": &(self.password)});
-                let request = Request::post(baseUrl.to_owned() + "api/account/authenticate")
+                let request = Request::post(BASE_URL.to_owned() + "api/account/authenticate")
                     .header("Content-Type", "application/json")
                     .body(Json(&request_body))
                     .expect("Could not build that request.");
@@ -82,7 +81,7 @@ impl Component for Login {
                 } else {
                     self.storage.store("jwt", Ok(data.reply));
                     self.fetch_task = None;
-                    web_sys::window().unwrap().location().assign("/");
+                    web_sys::window().unwrap().location().assign("/").unwrap();
                     return true;
                 }
             }

@@ -1,5 +1,6 @@
 pub mod DTOs;
 pub mod controllers;
+pub mod cors;
 pub mod data;
 pub mod entities;
 pub mod helpers;

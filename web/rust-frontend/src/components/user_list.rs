@@ -1,9 +1,5 @@
-use crate::baseUrl;
-use crate::models::{
-    url_model::UrlModel,
-    user::{User, UserEntity},
-};
-use crate::router::{AppAnchor, AppRoute};
+use crate::models::user::{User, UserEntity};
+use crate::BASE_URL;
 use yew::format::Json;
 use yew::format::Nothing;
 use yew::prelude::*;
@@ -24,7 +20,7 @@ pub enum Msg {
     Get,
     ReceiveResponse(Result<Vec<UserEntity>, anyhow::Error>),
     Remove(i32),
-    RemoveResponse(Result<String, anyhow::Error>),
+    RemoveResponse,
 }
 
 impl Component for UserList {
@@ -34,7 +30,7 @@ impl Component for UserList {
         let user_list: Vec<UserEntity> = vec![];
         let fetch_task: Option<FetchTask>;
         if props.user.isAdmin {
-            let request = Request::get(baseUrl.to_owned() + "api/users/")
+            let request = Request::get(BASE_URL.to_owned() + "api/users/")
                 .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer ".to_owned() + &props.token)
                 .body(Nothing)
@@ -62,7 +58,7 @@ impl Component for UserList {
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::Get => {
-                let request = Request::get(baseUrl.to_owned() + "api/users/")
+                let request = Request::get(BASE_URL.to_owned() + "api/users/")
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer ".to_owned() + &self.props.token)
                     .body(Nothing)
@@ -89,23 +85,22 @@ impl Component for UserList {
                 true
             }
             Msg::Remove(id) => {
-                let request = Request::delete(baseUrl.to_owned() + "api/users/" + &id.to_string())
+                let request = Request::delete(BASE_URL.to_owned() + "api/users/" + &id.to_string())
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer ".to_owned() + &self.props.token)
                     .body(Nothing)
                     .expect("Could not build that request.");
 
-                let callback = self.link.callback(
-                    |response: Response<Json<Result<String, anyhow::Error>>>| {
-                        let Json(data) = response.into_body();
-                        Msg::RemoveResponse(data)
-                    },
-                );
+                let callback =
+                    self.link
+                        .callback(|_: Response<Json<Result<String, anyhow::Error>>>| {
+                            Msg::RemoveResponse
+                        });
                 let task = FetchService::fetch(request, callback).expect("failed to start request");
                 self.fetch_task = Some(task);
                 true
             }
-            Msg::RemoveResponse(response) => {
+            Msg::RemoveResponse => {
                 self.fetch_task = None;
                 self.link.send_message(Msg::Get);
                 false
@@ -139,7 +134,7 @@ impl UserList {
         let id = item.id;
         html! {
             <li class="li">
-                {item.username.to_string()}{" with ID: "}{item.id} <button class="li-button" disabled={id==self.props.user.id} onclick=self.link.callback(move |_| Msg::Remove((id)))>{"✕"}</button>
+                {item.username.to_string()}{" with ID: "}{item.id} <button class="li-button" disabled={id==self.props.user.id} onclick=self.link.callback(move |_| Msg::Remove(id))>{"✕"}</button>
             </li>
         }
     }

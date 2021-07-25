@@ -1,4 +1,5 @@
 use rust_backend::controllers;
+use rust_backend::cors;
 use rust_backend::data::diesel_pg;
 use rust_backend::swagger;
 
@@ -10,6 +11,7 @@ extern crate bcrypt;
 fn rocket() -> _ {
     rocket::build()
         .attach(diesel_pg::stage())
+        .attach(cors::Cors)
         .mount("/", controllers::base_controller::get_endpoints())
         .mount(
             "/api/account",
